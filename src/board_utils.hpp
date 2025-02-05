@@ -46,15 +46,4 @@ int can_put_num(const Board &board, int color) {
     return res;
 }
 
-int eval(const Board &board, int color) {
-    int now = can_put_num(board, color);
-    int opp = can_put_num(board, color ^ 1);
-    if (now == 0 and opp == 0) {
-        if (now > opp) return 1e9;
-        if (now < opp) return -1e9;
-        return 0;
-    }
-    return 1 << (now / 3) + 1 << ((64 - opp) / 3);
-}
-
 #endif // BOARD_UTILS_HPP

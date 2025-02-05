@@ -4,7 +4,10 @@
 #include <iostream>
 #include "board.hpp"
 #include "board_utils.hpp"
-#include "exhaustive.hpp"
+// #include "exhaustive.hpp"
+#include "exhaustive_memo2.hpp"
+#include "minimax.hpp"
+#include "score.hpp"
 
 struct ComVsPlayer {
     Board board;
@@ -29,32 +32,53 @@ struct ComVsPlayer {
                 if (!exist_can_put(board, Board::WHITE)) break;
                 std::cout << "White pass" << std::endl;
             } else {
-                auto [score, d] = exhaustive_search(board, 0);
-                std::cout << score << " " << d / Board::SIZE << " " << d % Board::SIZE << std::endl;
+                if (board.exist.count() >= 48) {
+                    auto [_, d] = exhaustive_memo2(board);
+                    std::cout << _ << " " << d << std::endl;
+                }
+
                 player_put();
-                board.print(Board::WHITE);
+                // if (board.exist.count() < 48) {
+                //     auto [_, d] = minimax(board, -1e9, 1e9, 5);
+                //     std::cout << _ << " " << d << std::endl;
+                //     int x = d / Board::SIZE;
+                //     int y = d % Board::SIZE;
+                //     board.put(x, y, Board::BLACK);
+                //     // com_put(x, y);
+                // } else {
+                //     auto [_, d] = exhaustive_memo2(board);
+                //     std::cout << _ << std::endl;
+                //     int x = d / Board::SIZE;
+                //     int y = d % Board::SIZE;
+                //     board.put(x, y, Board::BLACK);
+                //     // com_put(x, y);
+                // }
+                // board.print(Board::WHITE);
                 std::cout << "Black: " << board.count(Board::BLACK) << std::endl;
                 std::cout << "White: " << board.count(Board::WHITE) << std::endl;
             }
+
             if (!exist_can_put(board, Board::WHITE)) {
                 if (!exist_can_put(board, Board::BLACK)) break;
                 std::cout << "Black pass" << std::endl;
             } else {
-                // なんかいい感じにおく
-                // for (int d = 0; d < Board::SIZE * Board::SIZE; d++) {
-                //     int x = d / Board::SIZE;
-                //     int y = d % Board::SIZE;
-                //     if (board.can_put(x, y, Board::Color::WHITE)) {
-                //         com_put(x, y);
-                //         break;
-                //     }
-                // }
+                board.flip();
+                    if (board.exist.count() < 48) {
+                    auto [_, d] = minimax<score_1_10>::search(board, -1e9 - 1, 1e9+1, 8);
+                    board.flip();
+                    std::cout << _ << " " << d << std::endl;
+                    int x = d / Board::SIZE;
+                    int y = d % Board::SIZE;
+                    com_put(x, y);
+                } else {
+                    auto [_, d] = exhaustive_memo2(board);
+                    board.flip();
+                    std::cout << _ << std::endl;
+                    int x = d / Board::SIZE;
+                    int y = d % Board::SIZE;
+                    com_put(x, y);
+                }
 
-                auto [_, d] = exhaustive_search(board, 1);
-                std::cout << _ << std::endl;
-                int x = d / Board::SIZE;
-                int y = d % Board::SIZE;
-                com_put(x, y);
 
                 std::cout << "Black: " << board.count(Board::BLACK) << std::endl;
                 std::cout << "White: " << board.count(Board::WHITE) << std::endl;

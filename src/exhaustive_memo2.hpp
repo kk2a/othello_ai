@@ -25,7 +25,7 @@ std::pair<int, int> exhaustive_memo2(Board board) {
     Board next_board = board;
     int w = 0;
     while (exist) {
-        int d = (w++ & 1) ? __builtin_ctzll(exist) : 63 - __builtin_clzll(exist);
+        int d = (w++ & 8) ? __builtin_ctzll(exist) : 63 - __builtin_clzll(exist);
         exist ^= 1ull << d;
         int x = d / Board::SIZE;
         int y = d % Board::SIZE;
@@ -56,7 +56,7 @@ std::pair<int, int> exhaustive_memo2(Board board) {
     next_board = board;
     exist = ~board.exist.to_ullong();
     while (exist) {
-        int d = (w++ & 1) ? __builtin_ctzll(exist) : 63 - __builtin_clzll(exist);
+        int d = (w++ & 8) ? __builtin_ctzll(exist) : 63 - __builtin_clzll(exist);
         // int d = 63 - __builtin_clzll(exist);
         exist ^= 1ull << d;
         int x = d / Board::SIZE;
