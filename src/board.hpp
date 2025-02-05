@@ -11,8 +11,7 @@ struct Board {
 
     constexpr static int BLACK = 0;
     constexpr static int WHITE = 1;
-    std::bitset<SIZE * SIZE> board;
-    std::bitset<SIZE * SIZE> exist;
+    std::bitset<SIZE * SIZE> board, exist;
 
     // flagがたっている -> 白, たっていない -> 黒
     Board() {
@@ -125,7 +124,7 @@ struct Board {
     }
 
     void flip() {
-        board.flip();
+        board ^= exist;
     }
 
     Board get_flip() const {

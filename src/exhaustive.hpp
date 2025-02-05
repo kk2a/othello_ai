@@ -1,18 +1,17 @@
 #ifndef EXHAUSTIVE_HPP
 #define EXHAUSTIVE_HPP 1
 
-#include <iostream>
+// #include <iostream>
 #include <utility>
-#include "board_utils.hpp"
 
 std::pair<int, int> exhaustive_search(const Board& board, int col) {
     int score = -100;
     int put = -1;
     // 8 * 8以下だけでしか使えない
-    unsigned long long exist = board.exist.to_ullong();
-    while (exist != -1ull) {
-        int d = __builtin_ctzll(~exist);
-        exist |= 1ull << d;
+    unsigned long long exist = ~board.exist.to_ullong();
+    while (exist) {
+        int d = __builtin_ctzll(exist);
+        exist ^= 1ull << d;
         int x = d / Board::SIZE;
         int y = d % Board::SIZE;
         Board next_board = board;
@@ -28,11 +27,11 @@ std::pair<int, int> exhaustive_search(const Board& board, int col) {
     }
 
     if (score != -100) return {score, put};
-    exist = board.exist.to_ullong();
+    exist = ~board.exist.to_ullong();
     col ^= 1;
-    while (exist != -1ull) {
-        int d = __builtin_ctzll(~exist);
-        exist |= 1ull << d;
+    while (exist) {
+        int d = __builtin_ctzll(exist);
+        exist ^= 1ull << d;
         int x = d / Board::SIZE;
         int y = d % Board::SIZE;
         Board next_board = board;

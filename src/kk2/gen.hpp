@@ -1,12 +1,16 @@
-#ifndef RANDOM_HPP
-#define RANDOM_HPP 1
+#ifndef GEN_HPP
+#define GEN_HPP 1
 
+#ifdef KK2
+#include <kk2/random/gen.hpp>
+#else
 #ifndef KK2_RANDOM_GEN_HPP
 #define KK2_RANDOM_GEN_HPP 1
 
 #include <algorithm>
 #include <cassert>
 #include <numeric>
+#include <random>
 #include <unordered_set>
 #include <vector>
 
@@ -21,7 +25,7 @@ namespace random {
 
 using u64 = unsigned long long;
 
-u64 non_deterministic_seed() {
+inline u64 non_deterministic_seed() {
     u64 seed = std::chrono::duration_cast<std::chrono::nanoseconds>(
                    std::chrono::high_resolution_clock::now().time_since_epoch())
                    .count();
@@ -32,12 +36,16 @@ u64 non_deterministic_seed() {
     return seed;
 }
 
-// u64 deterministic_seed() {
-//     return 5801799128519729247ull;
-// }
+inline u64 deterministic_seed() {
+    return 5801799128519729247ull;
+}
 
-u64 seed() {
+inline u64 seed() {
+#if defined(KK2_RANDOM_DETERMINISTIC)
+    return deterministic_seed();
+#else
     return non_deterministic_seed();
+#endif
 }
 
 } // namespace random
@@ -55,34 +63,13 @@ namespace random {
 using i64 = long long;
 using u64 = unsigned long long;
 
-u64 xorshift128plus(u64 &x, u64 &y) {
-    u64 t = x;
-    t ^= t << 23;
-    t ^= t >> 17;
-    t ^= y ^ (y >> 26);
-    x = y;
-    y = t;
-    return x + y;
-}
-
-constexpr int iterations = 100;
-
-void warm_up(u64 &x, u64 &y) {
-    for (int i = 0; i < iterations; i++) xorshift128plus(x, y);
-}
-
-u64 rng() {
-    static bool first = true;
-    static u64 x = seed(), y = seed();
-    if (first) {
-        warm_up(x, y);
-        first = false;
-    }
-    return xorshift128plus(x, y);
+inline u64 rng() {
+    static std::mt19937_64 mt(kk2::random::seed());
+    return mt();
 }
 
 // [l, r)
-i64 rng(i64 l, i64 r) {
+inline i64 rng(i64 l, i64 r) {
     assert(l < r);
     return l + rng() % (r - l);
 }
@@ -139,7 +126,12 @@ template <class T> std::vector<T> choices(int l, int r, int k) {
 } // namespace kk2
 
 #endif // KK2_RANDOM_GEN_HPP
-// #include <kk2/random/gen.hpp>
+
+// converted!!
+// Author: kk2
+// 2025-02-04 23:50:32
 
 
-#endif // RANDOM_HPP
+#endif
+
+#endif // GEN_HPP
