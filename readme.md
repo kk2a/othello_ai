@@ -23,7 +23,7 @@ h &= \sum_{x \in (\text{自分の石全体})}(x\text{に対応するマスの数
 $$
 
 
-マスに対応する数字は，[`score.hpp`](score.hpp)を参照．
+マスに対応する数字は，[`score.hpp`](src/score.hpp)を参照．
 
 ## 終盤
 
